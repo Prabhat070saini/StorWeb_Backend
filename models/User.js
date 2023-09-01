@@ -31,9 +31,6 @@ const userSchema = new mongoose.Schema({
         required: true,
 
     },
-    reSetPasswordExpires: {
-        type: Date,
-    },
     additionalDetails: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

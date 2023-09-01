@@ -10,10 +10,10 @@ const HostelSchema = new Schema({
         type: String,
         required: true
     },
-    rooms: {
+    rooms: [{
         type: Number,
-        required: true
-    },
+
+    }],
     capacity: {
         type: Number,
         required: true

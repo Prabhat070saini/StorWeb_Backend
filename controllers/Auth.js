@@ -108,24 +108,27 @@ exports.signUp = async (req, res) => {
         }
 
         // find most recently otp 
-        const recentotp = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
-        console.log(`recentotp-> ${recentotp}`);
+        if (accountType === "Admin") {
+            const recentotp = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+            console.log(`recentotp-> ${recentotp}`);
 
-        // validate otp
-        if (recentotp.length == 0) {
-            // otp not found 
-            return res.status(404).json({
-                success: false,
-                message: "otp not found",
-            });
+            // validate otp
+            if (recentotp.length == 0) {
+                // otp not found 
+                return res.status(404).json({
+                    success: false,
+                    message: "otp not found",
+                });
 
+            }
+            else if (recentotp[0].otp !== otp) {
+                return res.status(404).json({
+                    success: false,
+                    message: "invalid otp",
+                });
+            }
         }
-        else if (recentotp[0].otp !== otp) {
-            return res.status(404).json({
-                success: false,
-                message: "invalid otp",
-            });
-        }
+
         // Hash Password
         const Hashedpassword = await bycrpt.hash(password, 10);
 
@@ -177,7 +180,7 @@ exports.login = async (req, res) => {
                 message: 'All fields are required',
             })
         }
-        const user = await User.findOne({ email }).populate("additionalDetails").exec();;
+        const user = await User.findOne({ email }).populate("additionalDetails").populate("Student").exec();;
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -276,7 +279,7 @@ exports.changePassword = async (req, res) => {
 
                 `Password updated successfully`
             );
-            console.log("Email sent successfully:", emailResponse.response);
+            // console.log("Email sent successfully:", emailResponse.response);
         } catch (error) {
             // If there's an error sending the email, log the error and return a 500 (Internal Server Error) error
             console.error("Error occurred while sending email:", error);
